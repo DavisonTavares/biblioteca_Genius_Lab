@@ -23,6 +23,5 @@ class Livro(models.Model):
         return f"{self.titulo} - {self.autor}"
 
     def save(self, *args, **kwargs):
-        if self.quantidade_disponivel > self.quantidade_total:
-            self.quantidade_disponivel = self.quantidade_total
+        self.quantidade_disponivel = self.quantidade_total
         super().save(*args, **kwargs)

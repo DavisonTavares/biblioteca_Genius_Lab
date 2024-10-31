@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
 class Usuario(AbstractUser):
@@ -15,6 +15,17 @@ class Usuario(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'nome_completo', 'tipo_usuario']
+
+    groups = models.ManyToManyField(
+        Group,
+        related_name='usuario_set',  # Altera o related_name para evitar conflitos
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='usuario_set',  # Altera o related_name para evitar conflitos
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.nome_completo} ({self.get_tipo_usuario_display()})"
