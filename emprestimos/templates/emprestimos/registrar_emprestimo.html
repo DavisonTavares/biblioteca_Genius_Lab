@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Empréstimo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .form-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h2 {
+            color: #343a40;
+        }
+        .btn-custom {
+            background-color: #007bff; /* Azul padrão do Bootstrap */
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3; /* Azul mais escuro ao passar o mouse */
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' with title_page='EMPRÉSTIMOS' %}  
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">Registrar Empréstimo</h2>
+        <form method="post" class="form-container">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="usuario"><i class="fas fa-user"></i> Usuário</label>
+                {{ form.usuario }}  <!-- Campo com a classe já aplicada -->
+            </div>
+            <div class="form-group">
+                <label for="livro"><i class="fas fa-book"></i> Livro</label>
+                {{ form.livro }}  <!-- Campo com a classe já aplicada -->
+            </div>
+            <div class="form-group">
+                <label for="data_emprestimo"><i class="fas fa-calendar-alt"></i> Data do Empréstimo</label>
+                {{ form.data_emprestimo }}  <!-- Campo com a classe já aplicada -->
+            </div>
+            <div class="form-group">
+                <label for="data_devolucao_prevista"><i class="fas fa-calendar-check"></i> Data de Devolução Prevista</label>
+                {{ form.data_devolucao_prevista }}  <!-- Campo com a classe já aplicada -->
+            </div>
+            <div class="form-group">
+                <label for="status"><i class="fas fa-info-circle"></i> Status do Empréstimo</label>
+                {{ form.status }}  <!-- Campo com a classe já aplicada -->
+            </div>
+            <button type="submit" style="background-color: #008080" class="btn btn-custom mt-3 btn-block text-white">
+                <i class="fas fa-check"></i> Registrar Empréstimo
+            </button>
+            <a href="{% url 'listar_emprestimos' %}" class="btn btn-secondary mt-3 btn-block">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
