@@ -1,0 +1,97 @@
+{% load form_tags %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Usuário</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    {% include 'navbar.html' with title_page='USUÁRIOS' %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Cadastrar Usuário</h2>
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <form method="post" class="border p-4 bg-white shadow-sm rounded">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username">Nome de Usuário <i class="fas fa-user"></i></label>
+                {{ form.username|add_class:"form-control" }}
+                {% if form.username.errors %}
+                    <div class="text-danger">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="nome_completo">Nome Completo <i class="fas fa-id-card"></i></label>
+                {{ form.nome_completo|add_class:"form-control" }}
+                {% if form.nome_completo.errors %}
+                    <div class="text-danger">{{ form.nome_completo.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email <i class="fas fa-envelope"></i></label>
+                {{ form.email|add_class:"form-control" }}
+                {% if form.email.errors %}
+                    <div class="text-danger">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="tipo_usuario">Tipo de Usuário <i class="fas fa-user-tag"></i></label>
+                {{ form.tipo_usuario|add_class:"form-control" }}
+                {% if form.tipo_usuario.errors %}
+                    <div class="text-danger">{{ form.tipo_usuario.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="endereco">Endereço <i class="fas fa-map-marker-alt"></i></label>
+                {{ form.endereco|add_class:"form-control" }}
+                {% if form.endereco.errors %}
+                    <div class="text-danger">{{ form.endereco.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="telefone">Telefone <i class="fas fa-phone"></i></label>
+                {{ form.telefone|add_class:"form-control" }}
+                {% if form.telefone.errors %}
+                    <div class="text-danger">{{ form.telefone.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha <i class="fas fa-lock"></i></label>
+                {{ form.password|add_class:"form-control" }}
+                {% if form.password.errors %}
+                    <div class="text-danger">{{ form.password.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirmar Senha <i class="fas fa-lock"></i></label>
+                <input type="password" name="confirm_password" class="form-control" id="confirm_password" required>
+                {% if form.confirm_password.errors %}
+                    <div class="text-danger">{{ form.confirm_password.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+            <a class="btn btn-secondary">Cancelar</a> <!-- Link para a página de listar usuários -->
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

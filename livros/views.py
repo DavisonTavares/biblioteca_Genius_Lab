@@ -11,9 +11,15 @@ def cadastrar_livro(request):
             form.save()
             return redirect('listar_livros')  # redireciona para uma lista de livros, por exemplo
     else:
-        form = LivroForm()
-    return render(request, 'livros/cadastrar_livro.html', {'form': form})
+        context = {
+            'form': LivroForm(),
+            'usuario_logado': request.user
+        }
+    return render(request, 'livros/cadastrar_livro.html', context)
 
 def listar_livros(request):
-    livros = Livro.objects.all()  # Consulta todos os livros
-    return render(request, 'livros/listar_livros.html', {'livros': livros})
+    context = {
+        'livros': Livro.objects.all(),
+        'usuario_logado': request.user
+    }
+    return render(request, 'livros/listar_livros.html', context)

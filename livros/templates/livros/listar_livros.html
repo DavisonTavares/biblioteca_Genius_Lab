@@ -9,11 +9,13 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body class="bg-light">
-    {% include 'navbar.html' with title_page='LIVROS' %} 
+    {% include 'navbar.html' with title_page='LIVROS' user=usuario_logado %}
 
     <div class="container">
         <h2 class="mb-4">Lista de Livros</h2>
-        <a href="{% url 'cadastrar_livro' %}" style="background-color: #008080" class="btn mb-3 text-white">Cadastrar Novo Livro</a>
+        {% if usuario_logado.tipo_usuario == 'ADMIN' %}
+            <a href="{% url 'cadastrar_livro' %}" style="background-color: #008080" class="btn mb-3 text-white">Cadastrar Novo Livro</a>
+        {% endif %}
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
                 <thead class="text-white" style="background-color: #008B8B;">
