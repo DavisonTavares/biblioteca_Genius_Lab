@@ -30,6 +30,15 @@
 <body>
     {% include 'navbar.html' with title_page='EMPRÉSTIMOS' %}  
     <div class="container mt-5">
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.level_tag }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
         <h2 class="mb-4 text-center">Registrar Empréstimo</h2>
         <form method="post" class="form-container">
             {% csrf_token %}

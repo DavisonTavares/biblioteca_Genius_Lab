@@ -32,11 +32,25 @@
     <div class="container mt-5">
         <h2 class="mb-4 text-center">Listar Empréstimos</h2>
         <div class="table-container">
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <div class="alert alert-{{message.level_tag}}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if user.tipo_usuario == 'ADMIN' %}
             <a href="{% url 'registrar_emprestimo' %}" class="btn btn-custom mb-3">
                 <i class="fas fa-plus"></i> Registrar Novo Empréstimo
             </a>
+            <a href="{% url 'relatorio_emprestimos' %}" class="btn btn-custom mb-3">
+                <i class="fas fa-chart-line"></i> Gerar Relatório
+            </a>
+            {% endif %}
             <table class="table table-striped">
-                <thead style="background-color: #008080" class="text-white font-bold">
+                <thead style="background-color: #496592" class="text-white font-bold">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Usuário</th>
@@ -44,7 +58,9 @@
                         <th scope="col">Data do Empréstimo</th>
                         <th scope="col">Data de Devolução Prevista</th>
                         <th scope="col">Status</th>
+                        {% if user.tipo_usuario == 'ADMIN' %}
                         <th scope="col" class="text-center">Ações</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -55,16 +71,55 @@
                         <td>{{ emprestimo.livro }}</td>
                         <td>{{ emprestimo.data_emprestimo }}</td>
                         <td>{{ emprestimo.data_devolucao_prevista }}</td>
-                        <td>{{ emprestimo.status }}</td>
+                        <td> {{emprestimo.get_status_display}} </td>
+                        {% if user.tipo_usuario == 'ADMIN' %}
                         <td class="text-center">
-                            <a href="{% url 'editar_emprestimo' emprestimo.id %}" class="btn btn-warning btn-sm">
+                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalEditar{{ emprestimo.id }}">
                                 <i class="fas fa-edit"></i> Editar
-                            </a>
+                            </button>
                             <a href="{% url 'deletar_emprestimo' emprestimo.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar este empréstimo?');">
                                 <i class="fas fa-trash"></i> Deletar
                             </a>
                         </td>
-                    </tr>
+                        {% endif %}
+                    </tr>                    
+                    <!-- Modal de Edição -->
+                    <div class="modal fade" id="modalEditar{{ emprestimo.id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalLabel">Alterar Data de Devolução e Status</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form method="POST" action="{% url 'atualizar_data_devolucao' emprestimo.id %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="data_devolucao">Data de Devolução</label>
+                                            <input type="date" class="form-control" name="data_devolucao" 
+                                                value="{{ now|date:'Y-m-d' }}"  
+                                                max="{{ now|date:'Y-m-d' }}"    
+                                                required>
+
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="status">Status</label>
+                                            <select class="form-control" name="status" required>
+                                                <option value="AB" {% if emprestimo.status == 'AB' %}selected{% endif %}>Em andamento</option>
+                                                <option value="CO" {% if emprestimo.status == 'CO' %}selected{% endif %}>Devolvido</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     {% empty %}
                     <tr>
                         <td colspan="7" class="text-center">Nenhum empréstimo encontrado.</td>
@@ -72,6 +127,90 @@
                     {% endfor %}
                 </tbody>
             </table>
+                    <div class='text-center'>
+                        <h3 class='text-center mb-4'>
+                            {% if user.tipo_usuario == 'ADMIN' %}
+                                SOLICITAÇÕES DE RESERVA
+                            {% else %}
+                                MINHAS RESERVAS
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <table class="table table-striped">
+                        <thead style="background-color: #496592" class="text-white font-bold">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Usuário</th>
+                                <th scope="col">Livro</th>
+                                <th scope="col">Data da Reserva</th>
+                                <th scope="col">Data de Devolução Prevista</th>
+                                <th scope="col">Status</th>
+                                {% if user.tipo_usuario == 'ADMIN' %}
+                                <th scope="col" class="text-center">Ações</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reserva in reservas %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ reserva.usuario }}</td>
+                                <td>{{ reserva.livro }}</td>
+                                <td>{{ reserva.data_reserva }}</td>
+                                <td>{{ reserva.data_devolucao_prevista }}</td>
+                                <td> {{ reserva.get_status_display }} </td>
+                                {% if user.tipo_usuario == 'ADMIN' %}
+                                <td class="text-center">
+                                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalAlterarStatus{{ reserva.id }}">
+                                        <i class="fas fa-edit"></i> Alterar Status
+                                    </button>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            
+                            <!-- Modal para Alterar o Status -->
+                            <div class="modal fade" id="modalAlterarStatus{{ reserva.id }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel{{ reserva.id }}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalLabel{{ reserva.id }}">Alterar Status da Reserva</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form method="POST" action="{% url 'alterar_status_reserva' reserva.id %}">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <label for="status{{ reserva.id }}">Status</label>
+                                                    <select class="form-control" id="status{{ reserva.id }}" name="status" required>
+                                                        <option value="AA" {% if reserva.status == 'AA' %}selected{% endif %}>Aguardando Aprovação</option>
+                                                        <option value="AR" {% if reserva.status == 'AR' %}selected{% endif %}>Aguardando Retirada </option>
+                                                        <option value="AP" {% if reserva.status == 'AP' %}selected{% endif %}>Aprovada</option>
+                                                        <option value="CA" {% if reserva.status == 'CA' %}selected{% endif %}>Cancelada</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="data_devolucao{{ reserva.id }}">Data de Devolução Prevista</label>
+                                                    <input type="date" class="form-control" id="data_devolucao{{ reserva.id }}" name="data_devolucao" value="{{ reserva.data_devolucao_prevista|date:'Y-m-d' }}" required>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">Nenhuma reserva encontrada.</td>
+                            </tr>
+                            {% endfor %}    
+                        </tbody>
+                    </table>    
+                
         </div>
     </div>
 

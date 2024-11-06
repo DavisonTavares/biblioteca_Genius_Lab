@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
+
+
 class Usuario(AbstractUser):
     TIPO_USUARIO_CHOICES = [
         ('ADMIN', 'Administrador'),
@@ -28,4 +30,5 @@ class Usuario(AbstractUser):
     )
 
     def __str__(self):
-        return f"{self.nome_completo} ({self.get_tipo_usuario_display()})"
+        return f"{self.nome_completo} - {self.tipo_usuario}"
+

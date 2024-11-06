@@ -2,11 +2,19 @@ from django.db import models
 
 class Livro(models.Model):
     GENERO_CHOICES = [
-        ('FI', 'Ficção'),
-        ('NF', 'Não-Ficção'),
+        ('AC', 'Ação'),
+        ('CO', 'Comédia'),
+        ('DR', 'Drama'),
+        ('FA', 'Fantasia'),
         ('RO', 'Romance'),
-        ('CI', 'Ciência'),
-        # Adicione outros gêneros conforme necessário
+        ('TE', 'Terror'),
+        ('FI', 'Ficção'),
+        ('PO', 'Policial'),        
+    ]
+    
+    STATUS_CHOICES = [
+        (True, 'Disponível'),
+        (False, 'Indisponível'),
     ]
 
     titulo = models.CharField(max_length=255, verbose_name="Título do Livro")
@@ -18,10 +26,13 @@ class Livro(models.Model):
     quantidade_total = models.PositiveIntegerField(verbose_name="Quantidade Total")
     quantidade_disponivel = models.PositiveIntegerField(verbose_name="Quantidade Disponível")
     descricao = models.TextField(blank=True, null=True, verbose_name="Descrição")
-
+    status = models.BooleanField(default=True, choices=STATUS_CHOICES, verbose_name="Status")
+    
     def __str__(self):
         return f"{self.titulo} - {self.autor}"
 
     def save(self, *args, **kwargs):
-        self.quantidade_disponivel = self.quantidade_total
+        if self.quantidade_disponivel is None:
+            self.quantidade_disponivel = self.quantidade_total
         super().save(*args, **kwargs)
+        

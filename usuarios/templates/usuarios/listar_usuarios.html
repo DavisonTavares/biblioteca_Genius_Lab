@@ -1,129 +1,206 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Listar Leitores</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+  </head>
+  <body>
     {% include 'navbar.html' with title_page=title %}
     <div class="container mt-5">
-        <h2 class="mb-4">Lista de Leitores <i class="fas fa-book-reader"></i></h2>
-        <div class="mb-3">
-            <a href="{% url 'cadastrar_usuario' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Adicionar {% if title == 'LEITORES' %}Leitor{% else %}Administrador{% endif %}
-            </a>
-        </div>
-        <table class="table table-striped table-bordered">
-            <thead class="thead-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Nome Completo</th>
-                    <th>Email</th>
-                    <th>Tipo de Usuário</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td>{{ user.id }}</td>
-                        <td>{{ user.nome_completo }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.get_tipo_usuario_display }}</td>
-                        <td>
-                            <!-- Botão para abrir o modal de edição -->
-                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editUserModal" 
-                                data-id="{{ user.id }}"
-                                data-nome="{{ user.nome_completo }}"
-                                data-email="{{ user.email }}"
-                                data-tipo="{{ user.tipo_usuario }}"
-                                data-username="{{ user.username }}">
-                                <i class="fas fa-edit"></i> Editar
-                            </button>
-                            <a class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash-alt"></i> Deletar
-                            </a>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">Nenhum usuário cadastrado</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+      {% if messages %}
+      <div class="alert alert-danger">
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      <h2 class="mb-4">Lista de Leitores <i class="fas fa-book-reader"></i></h2>
+      <div>
+        <a href="{% url 'cadastrar_usuario' %}" class="btn btn-custom mb-3">
+          <i class="fas fa-plus"></i> Adicionar {% if title == 'LEITORES'%}Leitor{% else %}Administrador{% endif %}
+        </a>
+      </div>
+      <table class="table table-striped">
+        <thead style="background-color: #496592" class="text-white font-bold">
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Nome Completo</th>
+            <th>Email</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.nome_completo }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <!-- Botão para abrir o modal de edição -->
+              <button
+                class="btn btn-warning btn-sm"
+                data-toggle="modal"
+                data-target="#editUserModal"
+                data-id="{{ user.id }}"
+                data-nome="{{ user.nome_completo }}"
+                data-email="{{ user.email }}"
+                data-tipo="{{ user.tipo_usuario }}"
+                data-username="{{ user.username }}"
+              >
+                <i class="fas fa-edit"></i> Editar
+              </button>
+              <a class="btn btn-danger btn-sm"
+                href="{% url 'deletar_usuario' user.id %}"
+              >
+                <i class="fas fa-trash-alt"></i> Deletar
+              </a>
+              {% if title == 'LEITORES' %}
+              <a class="btn btn-info btn-sm" 
+                href="{% url 'relatorio_emprestimos' user.id %}">
+                  <i class="fas fa-chart-line"></i> Gerar Relatório              
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">Nenhum usuário cadastrado</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
 
     <!-- Modal de Edição de Usuário -->
-    <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editUserModalLabel">Editar Usuário</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+    <div
+      class="modal fade"
+      id="editUserModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="editUserModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editUserModalLabel">Editar Usuário</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="{% url 'editar_usuario' user.id %}" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="id">ID</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="id"
+                  name="id"
+                  readonly
+                />
+              </div>
+              <div class="form-group">
+                <label for="nome_completo">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  name="username"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <div class="form-group">
+                  <label for="nome_completo">Nome Completo</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nome_completo"
+                    name="nome_completo"
+                    required
+                  />
                 </div>
-                <form action="{% url 'editar_usuario' user.id %}" method="post">
-                    {% csrf_token %}
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="id">ID</label>
-                            <input type="text" class="form-control" id="id" name="id" readonly>
-                        </div>                        
-                        <div class="form-group">
-                            <label for="nome_completo">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
-                        </div>
-                        <div class="form-group">
-                        <div class="form-group">
-                            <label for="nome_completo">Nome Completo</label>
-                            <input type="text" class="form-control" id="nome_completo" name="nome_completo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="tipo_usuario">Tipo de Usuário</label>
-                            <select class="form-control" id="tipo_usuario" name="tipo_usuario" required>
-                                <option value="LEITOR">Leitor</option>
-                                <option value="ADMIN">Administrador</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-primary">Salvar alterações</button>
-                    </div>
-                </form>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="tipo_usuario">Tipo de Usuário</label>
+                  <select
+                    class="form-control"
+                    id="tipo_usuario"
+                    name="tipo_usuario"
+                    required
+                  >
+                    <option value="LEITOR">Leitor</option>
+                    <option value="ADMIN">Administrador</option>
+                  </select>
+                </div>
+              </div>
             </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Fechar
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Salvar alterações
+              </button>
+            </div>
+          </form>
         </div>
+      </div>      
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+
     <!-- Script para preencher o modal com os dados do usuário -->
     <script>
-        $('#editUserModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);  // Botão que acionou o modal
-            var userId = button.data('id');
-            var userNome = button.data('nome');
-            var userEmail = button.data('email');
-            var userTipo = button.data('tipo');
-            var userUsername = button.data('username');
-            
-            var modal = $(this);
-            modal.find('#id').val(userId);
-            modal.find('#nome_completo').val(userNome);
-            modal.find('#email').val(userEmail);
-            modal.find('#tipo_usuario').val(userTipo);
-            modal.find('#username').val(userUsername);
-        });
+      $("#editUserModal").on("show.bs.modal", function (event) {
+        var button = $(event.relatedTarget); // Botão que acionou o modal
+        var userId = button.data("id");
+        var userNome = button.data("nome");
+        var userEmail = button.data("email");
+        var userTipo = button.data("tipo");
+        var userUsername = button.data("username");
+
+        var modal = $(this);
+        modal.find("#id").val(userId);
+        modal.find("#nome_completo").val(userNome);
+        modal.find("#email").val(userEmail);
+        modal.find("#tipo_usuario").val(userTipo);
+        modal.find("#username").val(userUsername);
+      });
     </script>
-</body>
+  </body>
 </html>
