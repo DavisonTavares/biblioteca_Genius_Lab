@@ -45,9 +45,10 @@
             <a href="{% url 'registrar_emprestimo' %}" class="btn btn-custom mb-3">
                 <i class="fas fa-plus"></i> Registrar Novo Empréstimo
             </a>
-            <a href="{% url 'relatorio_emprestimos' %}" class="btn btn-custom mb-3">
+            <a href="#" class="btn btn-custom mb-3" data-toggle="modal" data-target="#gerarRelatorioModal">
                 <i class="fas fa-chart-line"></i> Gerar Relatório
             </a>
+            
             {% endif %}
             <table class="table table-striped">
                 <thead style="background-color: #496592" class="text-white font-bold">
@@ -125,6 +126,35 @@
                         <td colspan="7" class="text-center">Nenhum empréstimo encontrado.</td>
                     </tr>
                     {% endfor %}
+                    <div class="modal fade" id="gerarRelatorioModal" tabindex="-1" role="dialog" aria-labelledby="gerarRelatorioLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="gerarRelatorioLabel">Gerar Relatório de Empréstimos</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form method="POST" action="{% url 'relatorio_emprestimos' %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="data_inicio">Data Início</label>
+                                            <input type="date" class="form-control" id="data_inicio" name="data_inicio" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="data_fim">Data Fim</label>
+                                            <input type="date" class="form-control" id="data_fim" name="data_fim" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-primary">Gerar Relatório</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </tbody>
             </table>
                     <div class='text-center'>

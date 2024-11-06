@@ -13,6 +13,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from datetime import date
 from reportlab.lib.colors import HexColor
+from django.db.models import Q
 
 
 @login_required
@@ -210,17 +211,24 @@ def alterar_status_reserva(request, reserva_id):
 
 def gerar_relatorio_emprestimos(request):
     # Consulta os livros e os empréstimos
-    livros_emprestados = Livro.objects.annotate(quantidade_emprestimos=Count('emprestimo'))
+    data_inicio = request.POST['data_inicio']
+    data_fim = request.POST['data_fim']
 
-    # Livros que nunca foram emprestados
+    # Filtrando os empréstimos no intervalo de datas
+    livros_emprestados = Livro.objects.annotate(
+        quantidade_emprestimos=Count('emprestimo', filter=Q(emprestimo__data_emprestimo__gte=data_inicio, emprestimo__data_emprestimo__lte=data_fim))
+    )
+
+    # Livros que nunca foram emprestados (com base no período filtrado)
     livros_nunca_emprestados = livros_emprestados.filter(quantidade_emprestimos=0)
 
-    # O livro mais emprestado
+    # O livro mais emprestado no intervalo
     livro_mais_emprestado = livros_emprestados.order_by('-quantidade_emprestimos').first()
 
-    # O livro menos emprestado
+    # O livro menos emprestado no intervalo
     livro_menos_emprestado = livros_emprestados.order_by('quantidade_emprestimos').first()
 
+    
     # Gerar o PDF
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="relatorio_emprestimos.pdf"'
